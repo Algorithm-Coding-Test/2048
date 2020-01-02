@@ -1,168 +1,207 @@
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Scanner;
 
-class State{
-	ArrayList updown;
-	ArrayList side;
-	int num;
-	public State(ArrayList updown, ArrayList side, int num) {
-		this.updown = updown;
-		this.side = side;
-		this.num = num;
-	}
-}
 class main_2048 {
 
 	public static void main(String[] args) {
-		
+
 		Scanner scan = new Scanner(System.in);
 		int N = scan.nextInt();
 		int[][] board = new int[N][N];
-		
+
 		scan.nextLine();
-		
-		for(int i = 0; i < N; i++) {
-			for(int j = 0; j < N; j++) {
-				 board[i][j] = scan.nextInt();
-				 
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				board[i][j] = scan.nextInt();
+
 			}
 			scan.nextLine();
 		}
-		ArrayList<ArrayList<Integer>> updown = new ArrayList<>();
-		ArrayList<ArrayList<Integer>> side = new ArrayList<>();
-		
-		ArrayList<Integer> tmp = new ArrayList<>();
-		ArrayList<Integer> tmp2 = new ArrayList<>();
-		
-		for(int j=0;j<N;j++) {
-			tmp.clear();
-			tmp2.clear();
-			System.out.println();
-			for(int i=0;i<N;i++) {
-				tmp.add(board[i][j]);
-				tmp2.add(board[j][i]);
-			}
-			side.add((ArrayList)tmp2.clone());
-			updown.add((ArrayList)tmp.clone());
-		}
-		
-		ArrayList<State> newStat = new ArrayList<>();
-		State stat = new State(updown, side, 0);
-		newStat.add(stat);
-		
-		ArrayList<ArrayList<Integer>> newUpdown;
-		ArrayList<ArrayList<Integer>> newSide;
-		ArrayList<ArrayList<Integer>> updownTemp;
-		ArrayList<ArrayList<Integer>> sideTemp; 
-		
-		State tempStat;
-		int maxNum=0;
-		while(!newStat.isEmpty()) {
-			
-			tempStat = newStat.get(0);
-			if(tempStat.num == 6) break;
-			
-			System.out.println("New State ) num : "+ tempStat.num);
-			System.out.println();
-			
-			updownTemp = (ArrayList<ArrayList<Integer>>) tempStat.updown.clone();
-			sideTemp = (ArrayList<ArrayList<Integer>>) tempStat.side.clone();
-			/*upper*/
-			for(int i=0;i<N;i++) {
-				for(int j=0;j<N-1;j++) {
-					if(j+1 < updownTemp.get(i).size() && updownTemp.get(i).get(j)==updownTemp.get(i).get(j+1)) {
-						((ArrayList) updownTemp.get(i)).set(j, 2*updownTemp.get(i).get(j));
-						if(maxNum < 2*updownTemp.get(i).get(j)) {
-							maxNum = 2*updownTemp.get(i).get(j);
-						}
-						updownTemp.get(i).remove(j+1);
-					}
-				}
-			}
-			for(int i=0;i<N;i++) {
-				for(int j=0;j<N;j++) {
-					
-					if(i >= updownTemp.get(j).size()) {
-						sideTemp.get(i).set(j, 0);
-					}else {
-						sideTemp.get(i).set(j, updownTemp.get(j).get(i));
-					}
-				}
-			}
-			newStat.add(new State((ArrayList)updown.clone(), (ArrayList)side.clone(), tempStat.num+1));
-			
-			updownTemp = (ArrayList<ArrayList<Integer>>) tempStat.updown.clone();
-			sideTemp = (ArrayList<ArrayList<Integer>>) tempStat.side.clone();
-			/*under*/
-			for(int i=0;i<N;i++) {
-				for(int j=N-1;j>0;j--) {
-					if(j-1 >= 0 && updownTemp.get(i).get(j)==updownTemp.get(i).get(j-1)) {
-						((ArrayList) updownTemp.get(i)).set(j, 2*updownTemp.get(i).get(j));
-						if(maxNum < 2*updownTemp.get(i).get(j)) maxNum = 2*updownTemp.get(i).get(j);
-						updownTemp.get(i).remove(j+1);
-					}
-				}
-			}
-			for(int i=0;i<N;i++) {
-				for(int j=0;j<N;j++) {
-					if(i >= updownTemp.get(j).size()) {
-						sideTemp.get(i).set(j, 0);
-					}else {
-						sideTemp.get(i).set(j, updownTemp.get(j).get(i));
-					}
-				}
-			}
-			newStat.add(new State((ArrayList)updown.clone(), (ArrayList)side.clone(), tempStat.num+1));
-			
-			updownTemp = (ArrayList<ArrayList<Integer>>) tempStat.updown.clone();
-			sideTemp = (ArrayList<ArrayList<Integer>>) tempStat.side.clone();
-			/*rigth*/
-			for(int i=0;i<N;i++) {
-				for(int j=0;j<N-1;j++) {
-					if(j+1 < sideTemp.get(i).size() && sideTemp.get(i).get(j)==sideTemp.get(i).get(j+1)) {
-						((ArrayList) sideTemp.get(i)).set(j, 2*sideTemp.get(i).get(j));
-						if(maxNum < 2*sideTemp.get(i).get(j)) maxNum = 2*sideTemp.get(i).get(j);
-						sideTemp.get(i).remove(j+1);
-					}
-				}
-			}
-			for(int i=0;i<N;i++) {
-				for(int j=0;j<N;j++) {
-					if(i >= sideTemp.get(j).size()) {
-						updownTemp.get(i).set(j, 0);
-					}else {
-						updownTemp.get(i).set(j, sideTemp.get(j).get(i));
-					}
-				}
-			}
-			newStat.add(new State((ArrayList)updown.clone(), (ArrayList)side.clone(), tempStat.num+1));
-			
-			updownTemp = (ArrayList<ArrayList<Integer>>) tempStat.updown.clone();
-			sideTemp = (ArrayList<ArrayList<Integer>>) tempStat.side.clone();
-			
-			/*left*/
-			for(int i=0;i<N;i++) {
-				for(int j=N-1;j>0;j--) {
-					if(j-1 >= 0 && sideTemp.get(i).get(j)==sideTemp.get(i).get(j-1)) {
-						((ArrayList) sideTemp.get(i)).set(j, 2*sideTemp.get(i).get(j));
-						if(maxNum < 2*sideTemp.get(i).get(j)) maxNum = 2*sideTemp.get(i).get(j);
-						sideTemp.get(i).remove(j+1);
-					}
-				}
-			}
-			for(int i=0;i<N;i++) {
-				for(int j=0;j<N;j++) {
-					if(i >= sideTemp.get(j).size()) {
-						updownTemp.get(i).set(j, 0);
-					}else {
-						updownTemp.get(i).set(j, sideTemp.get(j).get(i));
-					}
-				}
-			}
-			newStat.add(new State((ArrayList)updown.clone(), (ArrayList)side.clone(), tempStat.num+1));
-			newStat.remove(0);
-		}
-		System.out.println(maxNum);
-	}
 
+		LinkedHashMap<int[][], Integer> state = new LinkedHashMap<>();
+		state.put(board, 0);
+
+		int[][] tempState = new int[N][N];
+		int[][] newState;
+		
+		int next;
+		int maxNum = 0;
+		
+		for (Iterator it = state.keySet().iterator(); it.hasNext();) {
+			
+			newState = ((int[][]) it.next());
+			int num = (int) state.get(newState);
+			if(num==5) break;
+			
+			
+			tempState = new int[N][N];
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					tempState[i][j] = newState[i][j];
+				}
+			}
+			/* 위로 이동 */
+			for (int i = 0; i < N - 1; i++) {
+				for (int j = 0; j < N; j++) {
+					if (maxNum < tempState[i][j])
+						maxNum = tempState[i][j];
+					next = -1;
+
+					for (int k = i + 1; k < N; k++) {
+						if (tempState[k][j] != 0) {
+							next = k;
+							break;
+						}
+					}
+					if (tempState[i][j] == 0 && next != -1) {
+						tempState[i][j] = tempState[next][j];
+						tempState[next][j] = 0;
+						next = i + 1;
+						for (int k = next; k < N; k++) {
+							if (tempState[k][j] != 0) {
+								next = k;
+								break;
+							}
+						}
+					}
+					if (next != -1 && tempState[i][j] != 0 && tempState[i][j] == tempState[next][j]) {
+						tempState[i][j] = tempState[i][j] * 2;
+						if (maxNum < tempState[i][j])
+							maxNum = tempState[i][j];
+						tempState[next][j] = 0;
+					}
+				}
+			}
+			state.put(tempState, num+1);
+			tempState = new int[N][N];
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					tempState[i][j] = newState[i][j];
+				}
+			}
+
+			/* 아래로 이동 */
+			for (int i = N - 1; i > 0; i--) {
+				for (int j = 0; j < N; j++) {
+					if (maxNum < tempState[i][j])
+						maxNum = tempState[i][j];
+					next = -1;
+
+					for (int k = i - 1; k >= 0; k--) {
+						if (tempState[k][j] != 0) {
+							next = k;
+							break;
+						}
+					}
+					if (tempState[i][j] == 0 && next != -1) {
+						tempState[i][j] = tempState[next][j];
+						tempState[next][j] = 0;
+						next = i - 1;
+						for (int k = next; k >= 0; k--) {
+							if (tempState[k][j] != 0) {
+								next = k;
+								break;
+							}
+						}
+					}
+					if (next != -1 && tempState[i][j] != 0 && tempState[i][j] == tempState[next][j]) {
+						tempState[i][j] = tempState[i][j] * 2;
+						if (maxNum < tempState[i][j])
+							maxNum = tempState[i][j];
+						tempState[next][j] = 0;
+					}
+				}
+			}
+			state.put(tempState, num+1);
+			tempState = new int[N][N];
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					tempState[i][j] = newState[i][j];
+				}
+			}
+			
+			/* 오른쪽으로 이동 */
+			for (int i = 0; i < N; i++) {
+				for (int j = N - 1; j > 0; j--) {
+					if (maxNum < tempState[i][j])
+						maxNum = tempState[i][j];
+					next = -1;
+
+					for (int k = j - 1; k >= 0; k--) {
+						if (tempState[i][k] != 0) {
+							next = k;
+							break;
+						}
+					}
+					if (tempState[i][j] == 0 && next != -1) {
+						tempState[i][j] = tempState[i][next];
+						tempState[i][next] = 0;
+						next = j - 1;
+						for (int k = next; k >= 0; k--) {
+							if (tempState[i][k] != 0) {
+								next = k;
+								break;
+							}
+						}
+					}
+					if (next != -1 && tempState[i][j] != 0 && tempState[i][j] == tempState[i][next]) {
+						tempState[i][j] = tempState[i][j] * 2;
+						if (maxNum < tempState[i][j])
+							maxNum = tempState[i][j];
+						tempState[i][next] = 0;
+					}
+				}
+			}
+			state.put(tempState, num+1);
+			tempState = new int[N][N];
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					tempState[i][j] = newState[i][j];
+				}
+			}
+			/* 왼쪽으로 이동 */
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N - 1; j++) {
+					if (maxNum < tempState[i][j])
+						maxNum = tempState[i][j];
+					next = -1;
+
+					for (int k = j + 1; k < N; k++) {
+						if (tempState[i][k] != 0) {
+							next = k;
+							break;
+						}
+					}
+					if (tempState[i][j] == 0 && next != -1) {
+						tempState[i][j] = tempState[i][next];
+						tempState[i][next] = 0;
+						next = j + 1;
+						for (int k = next; k < N; k++) {
+							if (tempState[i][k] != 0) {
+								next = k;
+								break;
+							}
+						}
+					}
+					if (next != -1 && tempState[i][j] != 0 && tempState[i][j] == tempState[i][next]) {
+						tempState[i][j] = tempState[i][j] * 2;
+						if (maxNum < tempState[i][j])
+							maxNum = tempState[i][j];
+						tempState[i][next] = 0;
+					}
+				}
+			}
+			state.put(tempState, num+1);
+
+			
+			state.remove(newState);
+			it = state.keySet().iterator();
+
+		}
+
+		System.out.println(maxNum);
+
+	}
 }
